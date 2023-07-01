@@ -30,7 +30,10 @@ def get_tweets(name: str):
         for tweet in timeline:
             if tweet['type'] == 'tweet':
                 tweet_content = tweet['content']['tweet']
-                print(json.dumps(tweet, indent=4))
+                retweeted = False
+                if 'retweeted_status' in tweet_content:
+                    retweeted = True
+                    tweet_content = tweet_content['retweeted_status']
                 result.append({
                     'id': tweet_content['id_str'],
                     'text': tweet_content['full_text'],
@@ -39,7 +42,7 @@ def get_tweets(name: str):
                     'replies': tweet_content['reply_count'],
                     'retweets': tweet_content['retweet_count'],
                     'date': tweet_content['created_at'],
-                    'retweeted': tweet_content['retweeted'],
+                    'retweeted': retweeted,
                     'author': {
                         'name': tweet_content['user']['name'],
                         'username': tweet_content['user']['screen_name'],
