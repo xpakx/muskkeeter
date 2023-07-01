@@ -1,4 +1,5 @@
 import requests
+import json
 from bs4 import BeautifulSoup
 
 subscriptions = ["ed_hagen"]
@@ -25,5 +26,5 @@ def get_profile(name: str):
     soup = BeautifulSoup(html, "html.parser")
     data = soup.find("script", {"id": "__NEXT_DATA__"})
     if data:
-        return data.text
+        return json.loads(data.text)
     return None
