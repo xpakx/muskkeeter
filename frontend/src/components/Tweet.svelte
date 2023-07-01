@@ -30,6 +30,16 @@
         <div class="content">
             {tweet.text}
         </div>
+
+        <div class="date">
+            {tweet.date}
+        </div>
+        <div class="actions">
+            <span>{tweet.replies}</span>
+            <span>{tweet.retweets}</span>
+            <span>{tweet.quotes}</span>
+            <span>{tweet.favs}</span>
+        </div>
     </div>
 </div>
 
@@ -37,6 +47,7 @@
     .tweet {
         display: flex;
         gap: 10px;
+        margin-bottom: 15px;
     }
 
     .avatar img {
@@ -45,5 +56,36 @@
 
     .tweet-column {
         flex-grow: 1;
+    }
+
+    .header, .content {
+        margin-bottom: 10px;
+    }
+
+    .user-header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .user-data {
+        display: flex;
+        gap: 5px;
+    }
+
+    .user-data_name {
+        font-weight: bold;
+        color: #a6adc8; 
+    }
+    
+    .user-data_handle {
+        color: #f2cdcd;
+    }
+
+    .date, .actions {
+        font-size: 13px;
+    }
+
+    .actions {
+        font-weight: bold;
     }
 </style>
