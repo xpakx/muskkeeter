@@ -1,6 +1,7 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 headers = {
     "Host": "syndication.twitter.com",
@@ -34,6 +35,13 @@ def get_tweets(name: str):
                 if 'retweeted_status' in tweet_content:
                     retweeted = True
                     tweet_content = tweet_content['retweeted_status']
+                tweet_media = []
+                if 'extended_entities' in tweet_content and 'media' in tweet_content['extended_entities']:
+                    for media in tweet_content['extended_entities']['media']:
+                        print(media['type'])
+                        if isinstance(media, dict) and media['type'] == 'photo':
+                            print(media['media_url_https'])
+                            tweet_media.append(media['media_url_https'])
                 result.append({
                     'id': tweet_content['id_str'],
                     'text': tweet_content['full_text'],
@@ -41,13 +49,14 @@ def get_tweets(name: str):
                     'quotes': tweet_content['quote_count'],
                     'replies': tweet_content['reply_count'],
                     'retweets': tweet_content['retweet_count'],
-                    'date': tweet_content['created_at'],
+                    'date':  datetime.strptime(tweet_content['created_at'], '%a %b %d %H:%M:%S %z %Y'),
                     'retweeted': retweeted,
                     'author': {
                         'name': tweet_content['user']['name'],
                         'username': tweet_content['user']['screen_name'],
                         'avatar': tweet_content['user']['profile_image_url_https'],
-                    }
+                    },
+                    'images': tweet_media if len(tweet_media) > 0 else None
                     })
         return result
     return None
