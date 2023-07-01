@@ -1,9 +1,11 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import Tweet from "../../components/Tweet.svelte";
+    import type { TweetDetails } from "../../types/tweet";
     let name = $page.params.name;
     let apiUri = "http://localhost:8000";
     let message: String;
-    let tweets: {id: number, text: String}[] = [];
+    let tweets: TweetDetails[] = [];
     getTimer(name);
 
     async function getTimer(username: String) {
@@ -32,8 +34,7 @@
 
 <h1>{name}'s profile</h1>
 {#each tweets as tweet}
-<div class="tweet">{tweet.text}</div>
-    
+   <Tweet {tweet} /> 
 {/each}
 
 <style>
