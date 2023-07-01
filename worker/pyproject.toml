@@ -10,6 +10,7 @@ packages = [{include = "muskker_worker"}]
 python = "^3.11"
 beautifulsoup4 = "^4.12.2"
 pika = "^1.3.2"
+rocketry = "^2.5.1"
 
 
 [build-system]
