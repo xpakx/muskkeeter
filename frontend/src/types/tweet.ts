@@ -10,7 +10,7 @@ export type TweetDetails = {
     author: {
         name: String,
         username: String,
-        avatar: String,
-    }
-
+        avatar: string,
+    },
+    images?: string[]
 }

@@ -37,6 +37,15 @@
             {tweet.text}
         </div>
 
+        {#if tweet.images }
+        <div class="images">
+            {#each tweet.images as img}
+            <img src={img} alt="img">
+            {/each}
+        </div>
+        {/if}
+
+
         <div class="date">
             {tweet.date}
         </div>
@@ -101,5 +110,9 @@
     .date {
         font-size: 13px;
         margin-bottom: 5px;
+    }
+
+    .images img {
+        max-width: 200px;
     }
 </style>
