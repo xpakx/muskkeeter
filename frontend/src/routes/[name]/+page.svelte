@@ -15,7 +15,12 @@
             });
 
             if (response.ok) {
-                tweets = await response.json();
+                let fromEndpoint = await response.json();
+                for(let tweet of fromEndpoint) {
+                    tweet.date = new Date(tweet.date);
+                }
+                tweets = fromEndpoint;
+
             } else {
                 const errorBody = await response.json();
                 message = errorBody.detail;

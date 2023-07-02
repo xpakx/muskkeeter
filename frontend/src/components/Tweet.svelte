@@ -14,6 +14,15 @@
         month: "short",
         day: "numeric",
     });
+
+    const long_formatter = new Intl.DateTimeFormat("default", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: false,
+    })
 </script>
 
 <div class="tweet">
@@ -30,7 +39,7 @@
                     <div class="user-data_name">{tweet.author.name}</div>
                     <div class="user-data_handle">@{tweet.author.username}</div>
                 </div>
-                <div class="date-header">{tweet.date}</div>
+                <div class="date-header">{formatter.format(tweet.date)}</div>
             </div>
         </div>
         <div class="content">
@@ -47,7 +56,7 @@
 
 
         <div class="date">
-            {tweet.date}
+            {long_formatter.format(tweet.date)}
         </div>
         <div class="actions">
             <span><Fa icon={faMessage} /> {tweet.replies}</span>
