@@ -22,7 +22,7 @@
         hour: "numeric",
         minute: "2-digit",
         hour12: false,
-    })
+    });
 </script>
 
 <div class="tweet">
@@ -32,12 +32,18 @@
     <div class="tweet-column">
         <div class="header">
             {#if tweet.retweeted}
-                <div class="retweet-header"><Fa icon={faReply} /> retweeted</div>
+                <div class="retweet-header">
+                    <Fa icon={faReply} /> retweeted
+                </div>
             {/if}
             <div class="user-header">
                 <div class="user-data">
                     <div class="user-data_name">{tweet.author.name}</div>
-                    <div class="user-data_handle">@{tweet.author.username}</div>
+                    <div class="user-data_handle">
+                        <a href="/{tweet.author.username}" rel="external">
+                            @{tweet.author.username}
+                        </a>
+                    </div>
                 </div>
                 <div class="date-header">{formatter.format(tweet.date)}</div>
             </div>
@@ -46,14 +52,13 @@
             {tweet.text}
         </div>
 
-        {#if tweet.images }
-        <div class="images">
-            {#each tweet.images as img}
-            <img src={img} alt="img">
-            {/each}
-        </div>
+        {#if tweet.images}
+            <div class="images">
+                {#each tweet.images as img}
+                    <img src={img} alt="img" />
+                {/each}
+            </div>
         {/if}
-
 
         <div class="date">
             {long_formatter.format(tweet.date)}
@@ -105,8 +110,9 @@
         color: #a6adc8;
     }
 
-    .user-data_handle {
+    .user-data_handle a {
         color: #f2cdcd;
+        text-decoration: none;
     }
 
     .actions {
@@ -123,5 +129,10 @@
 
     .images img {
         max-width: 200px;
+    }
+
+    .retweet-header {
+        font-size: 13px;
+        color: #a6adc8;
     }
 </style>

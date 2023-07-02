@@ -83,8 +83,8 @@
 
 <h1>{name}'s profile</h1>
 <div class="cards">
-    <button on:click={loadTimeline}>Tweets</button>
-    <button on:click={loadReplies}>Tweets & replies</button>
+    <button on:click={loadTimeline} class={active_card == TIMELINE ? 'active' : ''}>Tweets</button>
+    <button on:click={loadReplies} class={active_card == REPLIES ? 'active' : ''}>Tweets & replies</button>
 </div>
 
 {#each tweets as tweet}
@@ -92,4 +92,23 @@
 {/each}
 
 <style>
+    .cards {
+        display: flex;
+        margin-bottom: 10px;
+        gap: 5px;
+    }
+
+    .cards button {
+        background-color: transparent;
+        border: none;
+        border-bottom: 1px solid #f2cdcd;
+        cursor: pointer;
+        font-size: 16px;
+        color: #f2cdcd;
+    }
+
+    .cards button.active {
+        border-bottom: 3px solid #f2cdcd;
+        font-weight: bold;
+    }
 </style>

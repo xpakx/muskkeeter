@@ -1,10 +1,9 @@
-<script type="ts">
+<script lang="ts">
     import { goto } from "$app/navigation";
 
     let name = "";
 
-
-    function login() {
+    function search() {
         if (name != "") {
             goto(`/${name}`)
         }
@@ -20,7 +19,7 @@
                 id="username"
                 bind:value={name}
             />
-            <button type="submit" on:click={login}>go</button>
+            <button type="submit" on:click={search}>go</button>
         </form>
     </div>
 </div>
