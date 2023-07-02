@@ -24,6 +24,18 @@ def get_tweets(name: str):
     html = requests.get(url, headers=headers).content
     soup = BeautifulSoup(html, "html.parser")
     data = soup.find("script", {"id": "__NEXT_DATA__"})
+    return extract_tweets(data)
+
+
+def get_tweets_and_replies(name: str):
+    url = f"https://syndication.twitter.com/srv/timeline-profile/screen-name/{name}?showReplies=true"
+    html = requests.get(url, headers=headers).content
+    soup = BeautifulSoup(html, "html.parser")
+    data = soup.find("script", {"id": "__NEXT_DATA__"})
+    return extract_tweets(data)
+
+
+def extract_tweets(data):
     if data:
         jsondata = json.loads(data.text)
         timeline = jsondata['props']['pageProps']['timeline']['entries']
