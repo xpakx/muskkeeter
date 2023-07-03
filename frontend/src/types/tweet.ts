@@ -1,3 +1,5 @@
+import type { Link } from "./link";
+
 export type TweetDetails = {
     id: number;
     text: String;
@@ -12,5 +14,6 @@ export type TweetDetails = {
         username: String,
         avatar: string,
     },
-    images?: string[]
+    images?: string[],
+    link?:  Link
 }

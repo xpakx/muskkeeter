@@ -8,6 +8,7 @@
         faReply,
         faReplyAll,
     } from "@fortawesome/free-solid-svg-icons";
+    import LinkCard from "./LinkCard.svelte";
     export let tweet: TweetDetails;
 
     const formatter = new Intl.DateTimeFormat("default", {
@@ -67,6 +68,10 @@
             </div>
         {/if}
 
+        {#if tweet.link}
+            <LinkCard link={tweet.link} />
+        {/if}
+
         <div class="date">
             {long_formatter.format(tweet.date)}
         </div>
@@ -117,7 +122,8 @@
         color: #a6adc8;
     }
 
-    .user-data_handle a, .date-header a {
+    .user-data_handle a,
+    .date-header a {
         color: #f2cdcd;
         text-decoration: none;
     }
