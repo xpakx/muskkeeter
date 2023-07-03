@@ -45,7 +45,14 @@
                         </a>
                     </div>
                 </div>
-                <div class="date-header">{formatter.format(tweet.date)}</div>
+                <div class="date-header">
+                    <a
+                        href="/{tweet.author.username}/status/{tweet.id}"
+                        rel="external"
+                    >
+                        {formatter.format(tweet.date)}
+                    </a>
+                </div>
             </div>
         </div>
         <div class="content">
@@ -110,7 +117,7 @@
         color: #a6adc8;
     }
 
-    .user-data_handle a {
+    .user-data_handle a, .date-header a {
         color: #f2cdcd;
         text-decoration: none;
     }
