@@ -47,11 +47,13 @@ def extract_tweets(data):
                 if 'retweeted_status' in tweet_content:
                     retweeted = True
                     tweet_content = tweet_content['retweeted_status']
+                tweet_text = tweet_content['full_text']
                 tweet_media = []
                 if 'extended_entities' in tweet_content and 'media' in tweet_content['extended_entities']:
                     for media in tweet_content['extended_entities']['media']:
                         if isinstance(media, dict) and media['type'] == 'photo':
                             tweet_media.append(media['media_url_https'])
+                            tweet_text = tweet_text.replace(media['url'], '')
                 link = {}
                 if 'card' in tweet_content:
                     if tweet_content['card']['name'] == 'summary':
@@ -61,7 +63,6 @@ def extract_tweets(data):
                         link['title'] = values['title']['string_value']
                         link['description'] = values['description']['string_value']
                         link['image'] = values['thumbnail_image']['image_value']['url']
-                tweet_text = tweet_content['full_text'];
                 if 'urls' in tweet_content['entities']:
                     for url in tweet_content['entities']['urls']:
                         tweet_text = tweet_text.replace(url['url'], url['expanded_url'])
