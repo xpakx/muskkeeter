@@ -22,12 +22,13 @@ def get_tweet(id: str):
     if data:
         tweet = json.loads(data)
         tweet_media = []
+        print(tweet)
         return {
             'id': tweet['id_str'],
             'text': tweet['text'],
             'favs': tweet['favorite_count'],
             'quotes': 0,
-            'replies': 0,
+            'replies': tweet['conversation_count'],
             'retweets': 0,
             'date':  tweet['created_at'],
             'retweeted': False,
