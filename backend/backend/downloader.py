@@ -68,6 +68,18 @@ def extract_tweets(data):
                         tweet_text = tweet_text.replace(url['url'], url['expanded_url'])
                         if 'url' in link and link['url'] == url['url']:
                             link['url'] = url['expanded_url']
+                quoted_status = {}
+                if 'is_quote_status' in tweet_content and tweet_content['is_quote_status']:
+                    quoted = tweet_content['quoted_status']
+                    quoted_status['id'] = quoted['id_str']
+                    quoted_status['text'] = quoted['full_text']
+                    quoted_status['author'] = {
+                        'name': quoted['user']['name'],
+                        'username': quoted['user']['screen_name'],
+                        'avatar': quoted['user']['profile_image_url_https'],
+                    }
+                    quoted_status['date'] = datetime.strptime(quoted['created_at'], '%a %b %d %H:%M:%S %z %Y'),
+
                 result.append({
                     'id': tweet_content['id_str'],
                     'text': tweet_text,
@@ -83,7 +95,8 @@ def extract_tweets(data):
                         'avatar': tweet_content['user']['profile_image_url_https'],
                     },
                     'images': tweet_media if len(tweet_media) > 0 else None,
-                    'link': link if 'url' in link else None
+                    'link': link if 'url' in link else None,
+                    'quoted': quoted_status if 'text' in quoted_status else None,
                     })
         return result
     return None
