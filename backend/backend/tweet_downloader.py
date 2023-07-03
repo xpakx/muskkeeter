@@ -22,7 +22,6 @@ def get_tweet(id: str):
     if data:
         tweet = json.loads(data)
         tweet_media = []
-        print(tweet)
         return {
             'id': tweet['id_str'],
             'text': tweet['text'],

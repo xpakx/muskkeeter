@@ -50,13 +50,15 @@ def extract_tweets(data):
                 tweet_media = []
                 if 'extended_entities' in tweet_content and 'media' in tweet_content['extended_entities']:
                     for media in tweet_content['extended_entities']['media']:
-                        print(media['type'])
                         if isinstance(media, dict) and media['type'] == 'photo':
-                            print(media['media_url_https'])
                             tweet_media.append(media['media_url_https'])
+                tweet_text = tweet_content['full_text'];
+                if 'urls' in tweet_content['entities']:
+                    for url in tweet_content['entities']['urls']:
+                        tweet_text = tweet_text.replace(url['url'], url['expanded_url'])
                 result.append({
                     'id': tweet_content['id_str'],
-                    'text': tweet_content['full_text'],
+                    'text': tweet_text,
                     'favs': tweet_content['favorite_count'],
                     'quotes': tweet_content['quote_count'],
                     'replies': tweet_content['reply_count'],
