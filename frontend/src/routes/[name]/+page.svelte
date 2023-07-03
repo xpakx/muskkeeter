@@ -21,6 +21,9 @@
                 let fromEndpoint = await response.json();
                 for (let tweet of fromEndpoint) {
                     tweet.date = new Date(tweet.date);
+                    if (tweet.quoted) {
+                        tweet.quoted.date = new Date(tweet.quoted.date);
+                    }
                 }
                 tweets = fromEndpoint;
             } else {
@@ -47,6 +50,9 @@
                 let fromEndpoint = await response.json();
                 for (let tweet of fromEndpoint) {
                     tweet.date = new Date(tweet.date);
+                    if (tweet.quoted) {
+                        tweet.quoted.date = new Date(tweet.quoted.date);
+                    }
                 }
                 tweets = fromEndpoint;
             } else {

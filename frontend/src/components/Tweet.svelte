@@ -9,6 +9,7 @@
         faReplyAll,
     } from "@fortawesome/free-solid-svg-icons";
     import LinkCard from "./LinkCard.svelte";
+    import QuotedTweet from "./QuotedTweet.svelte";
     export let tweet: TweetDetails;
 
     const formatter = new Intl.DateTimeFormat("default", {
@@ -70,6 +71,10 @@
 
         {#if tweet.link}
             <LinkCard link={tweet.link} />
+        {/if}
+
+        {#if tweet.quoted}
+            <QuotedTweet tweet={tweet.quoted} />
         {/if}
 
         <div class="date">
