@@ -52,10 +52,21 @@ def extract_tweets(data):
                     for media in tweet_content['extended_entities']['media']:
                         if isinstance(media, dict) and media['type'] == 'photo':
                             tweet_media.append(media['media_url_https'])
+                link = {}
+                if 'card' in tweet_content:
+                    if tweet_content['card']['name'] == 'summary':
+                        values = tweet_content['card']['binding_values']
+                        link['url'] = tweet_content['card']['url']
+                        link['domain'] = values['vanity_url']['string_value']
+                        link['title'] = values['title']['string_value']
+                        link['description'] = values['description']['string_value']
+                        link['image'] = values['thumbnail_image']['image_value']['url']
                 tweet_text = tweet_content['full_text'];
                 if 'urls' in tweet_content['entities']:
                     for url in tweet_content['entities']['urls']:
                         tweet_text = tweet_text.replace(url['url'], url['expanded_url'])
+                        if 'url' in link and link['url'] == url['url']:
+                            link['url'] = url['expanded_url']
                 result.append({
                     'id': tweet_content['id_str'],
                     'text': tweet_text,
@@ -70,7 +81,8 @@ def extract_tweets(data):
                         'username': tweet_content['user']['screen_name'],
                         'avatar': tweet_content['user']['profile_image_url_https'],
                     },
-                    'images': tweet_media if len(tweet_media) > 0 else None
+                    'images': tweet_media if len(tweet_media) > 0 else None,
+                    'link': link if 'url' in link else None
                     })
         return result
     return None
