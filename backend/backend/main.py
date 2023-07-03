@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from .downloader import get_tweets, get_tweets_and_replies
+from .tweet_downloader import get_tweet
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -21,3 +22,8 @@ async def get_timeline(username: str):
 @app.get("/profile/{username}/replies")
 async def get_timeline_with_replies(username: str):
     return get_tweets_and_replies(username)
+
+
+@app.get("/tweet/{id}")
+async def get_single_tweet(id: str):
+    return get_tweet(id)
