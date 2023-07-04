@@ -46,6 +46,7 @@ def get_tweets(name: str):
             print(timeline_response.status_code)
             return
         timeline = json.loads(timeline_response.content)['data']['user']['result']['timeline_v2']['timeline']['instructions']
+        return timeline
         for instr in timeline:
             if 'entries' in instr:
                 return extract_tweets(instr['entries'])
@@ -59,6 +60,7 @@ def extract_tweets(data):
         for tweet in data:
             if 'content' in tweet and tweet['content']['entryType'] == 'TimelineTimelineItem' and tweet['content']['itemContent']['itemType'] == 'TimelineTweet':
                 tweet_content = tweet['content']['itemContent']['tweet_results']['result']['legacy']
+                user_content = tweet['content']['itemContent']['tweet_results']['result']['core']['user_results']['result']['legacy']
                 retweeted = False
                 tweet_text = tweet_content['full_text']
                 tweet_media = []
@@ -85,10 +87,15 @@ def extract_tweets(data):
                 if 'is_quote_status' in tweet_content and tweet_content['is_quote_status']:
                     pass
                     quoted = tweet['content']['itemContent']['tweet_results']['result']['quoted_status_result']['result']['legacy']
+                    quoted_author = tweet['content']['itemContent']['tweet_results']['result']['quoted_status_result']['result']['core']['user_results']['result']['legacy']
                     quoted_status['id'] = quoted['id_str']
                     quoted_status['text'] = quoted['full_text']
                     quoted_status['date'] = datetime.strptime(quoted['created_at'], '%a %b %d %H:%M:%S %z %Y'),
-
+                    quoted_status['author'] = {
+                        'name': quoted_author['name'],
+                        'username': quoted_author['screen_name'],
+                        'avatar': quoted_author['user']['profile_image_url_https'],
+                    }
                 result.append({
                     'id': tweet_content['id_str'],
                     'text': tweet_text,
@@ -98,6 +105,11 @@ def extract_tweets(data):
                     'retweets': tweet_content['retweet_count'],
                     'date':  datetime.strptime(tweet_content['created_at'], '%a %b %d %H:%M:%S %z %Y'),
                     'retweeted': retweeted,
+                    'author': {
+                        'name': user_content['name'],
+                        'username': user_content['screen_name'],
+                        'avatar': user_content['user']['profile_image_url_https'],
+                    },
                     'images': tweet_media if len(tweet_media) > 0 else None,
                     'link': link if 'url' in link else None,
                     'quoted': quoted_status if 'text' in quoted_status else None,
