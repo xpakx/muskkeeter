@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime
 
 android_api_key = ("CjulERsDeqhhjSme66ECg", "IQWdVyqFxghAtURHGeGiWAsmCAGmdW3WmbEx6Hck")
 get_token_endpoint = "https://api.twitter.com/oauth2/token?grant_type=client_credentials"
@@ -45,7 +46,61 @@ def get_tweets(name: str):
             print(timeline_response.status_code)
             return
         timeline = json.loads(timeline_response.content)['data']['user']['result']['timeline_v2']['timeline']['instructions']
-
+        for instr in timeline:
+            if 'entries' in instr:
+                return extract_tweets(instr['entries'])
         return timeline
     else:
         print("failed")
+
+def extract_tweets(data):
+    if data:
+        result = []
+        for tweet in data:
+            if 'content' in tweet and tweet['content']['entryType'] == 'TimelineTimelineItem' and tweet['content']['itemContent']['itemType'] == 'TimelineTweet':
+                tweet_content = tweet['content']['itemContent']['tweet_results']['result']['legacy']
+                retweeted = False
+                tweet_text = tweet_content['full_text']
+                tweet_media = []
+                if 'extended_entities' in tweet_content and 'media' in tweet_content['extended_entities']:
+                    for media in tweet_content['extended_entities']['media']:
+                        if isinstance(media, dict) and media['type'] == 'photo':
+                            tweet_media.append(media['media_url_https'])
+                            tweet_text = tweet_text.replace(media['url'], '')
+                link = {}
+                if 'card' in tweet_content:
+                    if tweet_content['card']['name'] == 'summary':
+                        values = tweet_content['card']['binding_values']
+                        link['url'] = tweet_content['card']['url']
+                        link['domain'] = values['vanity_url']['string_value']
+                        link['title'] = values['title']['string_value']
+                        link['description'] = values['description']['string_value']
+                        link['image'] = values['thumbnail_image']['image_value']['url']
+                if 'urls' in tweet_content['entities']:
+                    for url in tweet_content['entities']['urls']:
+                        tweet_text = tweet_text.replace(url['url'], url['expanded_url'])
+                        if 'url' in link and link['url'] == url['url']:
+                            link['url'] = url['expanded_url']
+                quoted_status = {}
+                if 'is_quote_status' in tweet_content and tweet_content['is_quote_status']:
+                    pass
+                    quoted = tweet['content']['itemContent']['tweet_results']['result']['quoted_status_result']['result']['legacy']
+                    quoted_status['id'] = quoted['id_str']
+                    quoted_status['text'] = quoted['full_text']
+                    quoted_status['date'] = datetime.strptime(quoted['created_at'], '%a %b %d %H:%M:%S %z %Y'),
+
+                result.append({
+                    'id': tweet_content['id_str'],
+                    'text': tweet_text,
+                    'favs': tweet_content['favorite_count'],
+                    'quotes': tweet_content['quote_count'],
+                    'replies': tweet_content['reply_count'],
+                    'retweets': tweet_content['retweet_count'],
+                    'date':  datetime.strptime(tweet_content['created_at'], '%a %b %d %H:%M:%S %z %Y'),
+                    'retweeted': retweeted,
+                    'images': tweet_media if len(tweet_media) > 0 else None,
+                    'link': link if 'url' in link else None,
+                    'quoted': quoted_status if 'text' in quoted_status else None,
+                    })
+        return result
+    return None
