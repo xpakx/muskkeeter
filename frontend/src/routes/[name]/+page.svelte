@@ -40,7 +40,7 @@
     async function getReplies(username: String) {
         try {
             let response = await fetch(
-                `${apiUri}/profile/${username}/replies`,
+                `${apiUri}/guest/profile/${username}/replies`,
                 {
                     method: "GET",
                 }
