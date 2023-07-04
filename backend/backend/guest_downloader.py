@@ -145,8 +145,13 @@ def extract_tweets(data):
                             link['url'] = url['expanded_url']
                 quoted_status = {}
                 if 'is_quote_status' in tweet_content and tweet_content['is_quote_status']:
-                    quoted = tweet['content']['itemContent']['tweet_results']['result']['quoted_status_result']['result']['legacy']
-                    quoted_author = tweet['content']['itemContent']['tweet_results']['result']['quoted_status_result']['result']['core']['user_results']['result']['legacy']
+                    quoted_parent = tweet['content']['itemContent']['tweet_results']['result']
+                    if 'quoted_status_result' in quoted_parent:
+                        quoted_parent = quoted_parent['quoted_status_result']
+                    else:  # TODO: probably because of RT
+                        quoted_parent = tweet_content['retweeted_status_result']
+                    quoted = quoted_parent['result']['legacy']
+                    quoted_author = quoted_parent['result']['core']['user_results']['result']['legacy']
                     quoted_status['id'] = quoted['id_str']
                     quoted_status['text'] = quoted['full_text']
                     quoted_status['date'] = datetime.strptime(quoted['created_at'], '%a %b %d %H:%M:%S %z %Y'),
