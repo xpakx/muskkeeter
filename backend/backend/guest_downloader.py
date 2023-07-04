@@ -46,7 +46,6 @@ def get_tweets(name: str):
             print(timeline_response.status_code)
             return
         timeline = json.loads(timeline_response.content)['data']['user']['result']['timeline_v2']['timeline']['instructions']
-        return timeline
         for instr in timeline:
             if 'entries' in instr:
                 return extract_tweets(instr['entries'])
@@ -85,7 +84,6 @@ def extract_tweets(data):
                             link['url'] = url['expanded_url']
                 quoted_status = {}
                 if 'is_quote_status' in tweet_content and tweet_content['is_quote_status']:
-                    pass
                     quoted = tweet['content']['itemContent']['tweet_results']['result']['quoted_status_result']['result']['legacy']
                     quoted_author = tweet['content']['itemContent']['tweet_results']['result']['quoted_status_result']['result']['core']['user_results']['result']['legacy']
                     quoted_status['id'] = quoted['id_str']
@@ -94,7 +92,7 @@ def extract_tweets(data):
                     quoted_status['author'] = {
                         'name': quoted_author['name'],
                         'username': quoted_author['screen_name'],
-                        'avatar': quoted_author['user']['profile_image_url_https'],
+                        'avatar': quoted_author['profile_image_url_https'],
                     }
                 result.append({
                     'id': tweet_content['id_str'],
@@ -108,7 +106,7 @@ def extract_tweets(data):
                     'author': {
                         'name': user_content['name'],
                         'username': user_content['screen_name'],
-                        'avatar': user_content['user']['profile_image_url_https'],
+                        'avatar': user_content['profile_image_url_https'],
                     },
                     'images': tweet_media if len(tweet_media) > 0 else None,
                     'link': link if 'url' in link else None,
