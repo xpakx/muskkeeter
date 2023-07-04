@@ -13,7 +13,7 @@
 
     async function getTimeline(username: String) {
         try {
-            let response = await fetch(`${apiUri}/profile/${username}`, {
+            let response = await fetch(`${apiUri}/guest/profile/${username}`, {
                 method: "GET",
             });
 
