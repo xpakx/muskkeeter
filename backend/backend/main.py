@@ -33,3 +33,8 @@ async def get_single_tweet(id: str):
 @app.get("/guest/profile/{username}")
 async def guest_get_timeline(username: str):
     return guest_get_tweets(username)
+
+
+@app.get("/guest/profile/{username}/replies")
+async def guest_get_timeline(username: str):
+    return guest_get_tweets(username, True)

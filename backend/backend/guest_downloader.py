@@ -6,7 +6,8 @@ android_api_key = ("CjulERsDeqhhjSme66ECg", "IQWdVyqFxghAtURHGeGiWAsmCAGmdW3WmbE
 get_token_endpoint = "https://api.twitter.com/oauth2/token?grant_type=client_credentials"
 activate_token_endpoint = "https://api.twitter.com/1.1/guest/activate.json"
 user_to_id_endpoint = "https://api.twitter.com/graphql/oUZZZ8Oddwxs8Cd3iW3UEA/UserByScreenName"
-timeline_endpoint = "https://api.twitter.com/graphql/pNl8WjKAvaegIoVH--FuoQ/UserTweetsAndReplies"
+timeline_replies_endpoint = "https://api.twitter.com/graphql/pNl8WjKAvaegIoVH--FuoQ/UserTweetsAndReplies"
+timeline_endpoint = "https://api.twitter.com/graphql/rIIwMe1ObkGh_ByBtTCtRQ/UserTweets" 
 
 
 def get_user_to_id_params(name: str):
@@ -29,7 +30,7 @@ def get_user_to_id_params(name: str):
             }
 
 
-def get_timeline_endpoint_params(id: int):
+def get_timeline_replies_endpoint_params(id: int):
     return {
             "variables": json.dumps({
                 "userId": id,
@@ -68,7 +69,52 @@ def get_timeline_endpoint_params(id: int):
             }
 
 
-def get_tweets(name: str):
+def get_timeline_endpoint_params(id: int):
+    return {
+            "variables": json.dumps({
+                "userId": id,
+                "count": 40,
+                "includePromotedContent": True,
+                "withCommunity": True,
+                "withSuperFollowsUserFields": True,
+                "withDownvotePerspective": False,
+                "withReactionsMetadata": False,
+                "withReactionsPerspective": False,
+                "withSuperFollowsTweetFields": True,
+                "withVoice": True,
+                "withV2Timeline": True
+                }),
+            "features": json.dumps({
+                "responsive_web_twitter_blue_verified_badge_is_enabled": True,
+                "responsive_web_graphql_exclude_directive_enabled": True,
+                "verified_phone_label_enabled": False,
+                "responsive_web_graphql_timeline_navigation_enabled": True,
+                "responsive_web_graphql_skip_user_profile_image_extensions_enabled": False,
+                "tweetypie_unmention_optimization_enabled": True,
+                "vibe_api_enabled": True,
+                "responsive_web_edit_tweet_api_enabled": True,
+                "graphql_is_translatable_rweb_tweet_is_translatable_enabled": True,
+                "view_counts_everywhere_api_enabled": True,
+                "longform_notetweets_consumption_enabled": True,
+                "tweet_awards_web_tipping_enabled": False,
+                "freedom_of_speech_not_reach_fetch_enabled": False,
+                "standardized_nudges_misinfo": True,
+                "tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled": False,
+                "interactive_text_enabled": True,
+                "responsive_web_text_conversations_enabled": False,
+                "longform_notetweets_richtext_consumption_enabled": False,
+                "responsive_web_enhance_cards_enabled": False,
+                "creator_subscriptions_tweet_preview_api_enabled": True,
+                "rweb_lists_timeline_redesign_enabled": True,
+                "longform_notetweets_inline_media_enabled": True, 
+                "responsive_web_twitter_article_tweet_consumption_enabled": True,
+                "longform_notetweets_rich_text_read_enabled": True,
+                "responsive_web_media_download_video_enabled": True
+                })
+            }
+
+
+def get_tweets(name: str, replies: bool = False):
     resp = requests.post(get_token_endpoint, auth=android_api_key)
     if (resp.status_code == 200):
         token = json.loads(resp.content)["access_token"]
@@ -98,13 +144,14 @@ def get_tweets(name: str):
             return
         user_id = json.loads(user_id_response.content)['data']['user']['result']['rest_id']
         timeline_response = requests.get(
-                timeline_endpoint.format(user_id),
+                timeline_replies_endpoint if replies else timeline_endpoint,
                 headers=headers,
-                params=get_timeline_endpoint_params(user_id)
+                params=get_timeline_replies_endpoint_params(user_id) if replies else get_timeline_endpoint_params(user_id)
                 )
         if (timeline_response.status_code != 200):
             print("couldn't get content")
             print(timeline_response.status_code)
+            print(timeline_response.content)
             return
         timeline = json.loads(timeline_response.content)['data']['user']['result']['timeline_v2']['timeline']['instructions']
         for instr in timeline:
