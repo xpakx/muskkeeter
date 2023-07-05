@@ -107,9 +107,9 @@ def get_timeline_endpoint_params(id: int):
                 "creator_subscriptions_tweet_preview_api_enabled": True,
                 "rweb_lists_timeline_redesign_enabled": True,
                 "longform_notetweets_inline_media_enabled": True, 
-                "responsive_web_twitter_article_tweet_consumption_enabled": True,
+                "responsive_web_twitter_article_tweet_consumption_enabled": False,
                 "longform_notetweets_rich_text_read_enabled": True,
-                "responsive_web_media_download_video_enabled": True
+                "responsive_web_media_download_video_enabled": False
                 })
             }
 
