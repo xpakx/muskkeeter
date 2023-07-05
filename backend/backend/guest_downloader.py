@@ -43,7 +43,7 @@ def get_timeline_replies_endpoint_params(id: int):
                 "withReactionsPerspective": False,
                 "withSuperFollowsTweetFields": True,
                 "withVoice": True,
-                "withV2Timeline": True
+                "withV2Timeline": False
                 }),
             "features": json.dumps({
                 "responsive_web_twitter_blue_verified_badge_is_enabled": True,
@@ -82,7 +82,7 @@ def get_timeline_endpoint_params(id: int):
                 "withReactionsPerspective": False,
                 "withSuperFollowsTweetFields": True,
                 "withVoice": True,
-                "withV2Timeline": True
+                "withV2Timeline": False
                 }),
             "features": json.dumps({
                 "responsive_web_twitter_blue_verified_badge_is_enabled": True,
@@ -153,7 +153,7 @@ def get_tweets(name: str, replies: bool = False):
             print(timeline_response.status_code)
             print(timeline_response.content)
             return
-        timeline = json.loads(timeline_response.content)['data']['user']['result']['timeline_v2']['timeline']['instructions']
+        timeline = json.loads(timeline_response.content)['data']['user']['result']['timeline']['timeline']['instructions']
         for instr in timeline:
             if 'entries' in instr:
                 return extract_tweets(instr['entries'])
