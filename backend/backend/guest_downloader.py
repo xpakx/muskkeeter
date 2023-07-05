@@ -198,6 +198,8 @@ def extract_tweets(data):
                 quoted_status = {}
                 if 'is_quote_status' in tweet_content and tweet_content['is_quote_status']:
                     quoted_parent = tweet['content']['itemContent']['tweet_results']['result']
+                    if retweeted:
+                        quoted_parent = tweet['content']['itemContent']['tweet_results']['result']['legacy']['retweeted_status_result']['result']['quoted_status_result']
                     if 'quoted_status_result' in quoted_parent:
                         quoted_parent = quoted_parent['quoted_status_result']
                     elif 'retweeted_status_result' in tweet_content:  # TODO: probably because of RT
