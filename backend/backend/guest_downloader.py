@@ -169,6 +169,11 @@ def extract_tweets(data):
                 tweet_content = tweet['content']['itemContent']['tweet_results']['result']['legacy']
                 user_content = tweet['content']['itemContent']['tweet_results']['result']['core']['user_results']['result']['legacy']
                 retweeted = False
+                if 'retweeted_status_result' in tweet_content:
+                    retweeted = True
+                    old_content = tweet_content
+                    tweet_content = tweet_content['retweeted_status_result']['result']['legacy']
+                    user_content =  old_content['retweeted_status_result']['result']['core']['user_results']['result']['legacy']
                 tweet_text = tweet_content['full_text']
                 tweet_media = []
                 if 'extended_entities' in tweet_content and 'media' in tweet_content['extended_entities']:
@@ -195,7 +200,7 @@ def extract_tweets(data):
                     quoted_parent = tweet['content']['itemContent']['tweet_results']['result']
                     if 'quoted_status_result' in quoted_parent:
                         quoted_parent = quoted_parent['quoted_status_result']
-                    else:  # TODO: probably because of RT
+                    elif 'retweeted_status_result' in tweet_content:  # TODO: probably because of RT
                         quoted_parent = tweet_content['retweeted_status_result']
                     quoted = quoted_parent['result']['legacy']
                     quoted_author = quoted_parent['result']['core']['user_results']['result']['legacy']
