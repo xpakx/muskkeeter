@@ -8,6 +8,7 @@ activate_token_endpoint = "https://api.twitter.com/1.1/guest/activate.json"
 user_to_id_endpoint = "https://api.twitter.com/graphql/oUZZZ8Oddwxs8Cd3iW3UEA/UserByScreenName"
 timeline_replies_endpoint = "https://api.twitter.com/graphql/pNl8WjKAvaegIoVH--FuoQ/UserTweetsAndReplies"
 timeline_endpoint = "https://api.twitter.com/graphql/rIIwMe1ObkGh_ByBtTCtRQ/UserTweets" 
+tweet_endpoint = "https://api.twitter.com/graphql/XjlydVWHFIDaAUny86oh2g/TweetDetail"
 
 
 def get_user_to_id_params(name: str):
@@ -114,6 +115,56 @@ def get_timeline_endpoint_params(id: int):
             }
 
 
+def get_tweet_endpoint_params(tweet_id: int):
+    return {
+        "features": json.dumps({
+            "rweb_lists_timeline_redesign_enabled": True,
+            "creator_subscriptions_tweet_preview_api_enabled": True,
+            "responsive_web_twitter_article_tweet_consumption_enabled": False,
+            "longform_notetweets_rich_text_read_enabled": True,
+            "longform_notetweets_inline_media_enabled": True,
+            "responsive_web_media_download_video_enabled": True,
+            "responsive_web_enhance_cards_enabled": True,
+            "responsive_web_twitter_blue_verified_badge_is_enabled": True,
+            "responsive_web_graphql_exclude_directive_enabled": True,
+            "verified_phone_label_enabled": False,
+            "responsive_web_graphql_timeline_navigation_enabled": True,
+            "responsive_web_graphql_skip_user_profile_image_extensions_enabled": False,
+            "tweetypie_unmention_optimization_enabled": True,
+            "vibe_api_enabled": True,
+            "responsive_web_edit_tweet_api_enabled": True,
+            "graphql_is_translatable_rweb_tweet_is_translatable_enabled": False,
+            "view_counts_everywhere_api_enabled": True,
+            "longform_notetweets_consumption_enabled": True,
+            "tweet_awards_web_tipping_enabled": False,
+            "freedom_of_speech_not_reach_fetch_enabled": False,
+            "standardized_nudges_misinfo": True,
+            "tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled": False,
+            "interactive_text_enabled": True,
+            "responsive_web_text_conversations_enabled": False,
+            "longform_notetweets_richtext_consumption_enabled": False
+        }),
+        "variables": json.dumps({
+            "focalTweetId": tweet_id,
+            "with_rux_injections": True,
+            "includePromotedContent": False,
+            "withCommunity": False,
+            "withQuickPromoteEligibilityTweetFields": False,
+            "withBirdwatchNotes": False,
+            "withSuperFollowsUserFields": False,
+            "withDownvotePerspective": False,
+            "withReactionsMetadata": False,
+            "withReactionsPerspective": False,
+            "withSuperFollowsTweetFields": False,
+            "withVoice": True,
+            "withV2Timeline": False
+        }),
+        "fieldToggles": json.dumps({
+            "withArticleRichContentState": False
+        })
+    }
+
+
 def get_tweets(name: str, replies: bool = False):
     resp = requests.post(get_token_endpoint, auth=android_api_key)
     if (resp.status_code == 200):
@@ -129,7 +180,7 @@ def get_tweets(name: str, replies: bool = False):
         guest_token = json.loads(activate_resp.content)["guest_token"]
         headers = {
                 "Authorization": f"Bearer {token}",
-                #"x-guest-token": "1675958319943393280",
+                # "x-guest-token": guest_token,
                 "x-twitter-active-user": "yes",
                 "Referer": "https://twitter.com/"
                 }
@@ -234,3 +285,42 @@ def extract_tweets(data):
                     })
         return result
     return None
+
+
+def get_tweet(id: str):
+    resp = requests.post(get_token_endpoint, auth=android_api_key)
+    if (resp.status_code == 200):
+        token = json.loads(resp.content)["access_token"]
+        auth_header = {"Authorization": f"Bearer {token}"}
+        activate_resp = requests.post(
+                activate_token_endpoint,
+                headers=auth_header
+                )
+        if (activate_resp.status_code != 200):
+            print("failed")
+            return
+        guest_token = json.loads(activate_resp.content)["guest_token"]
+        headers = {
+                "Authorization": f"Bearer {token}",
+                # "x-guest-token": guest_token,
+                "x-twitter-active-user": "yes",
+                "Referer": "https://twitter.com/"
+                }
+        tweet_response = requests.get(
+                tweet_endpoint,
+                headers=headers,
+                params=get_tweet_endpoint_params(id)
+                )
+        if (tweet_response.status_code != 200):
+            print("couldn't get content")
+            print(tweet_response.status_code)
+            print(tweet_response.content)
+            return
+        return tweet_response
+        timeline = json.loads(tweet_response.content)['data']['threaded_conversation_with_injections']['instructions']
+        for instr in timeline:
+            if 'entries' in instr:
+                return extract_tweets(instr['entries'])
+        return timeline
+    else:
+        print("failed")
