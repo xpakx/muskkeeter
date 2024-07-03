@@ -1,6 +1,7 @@
 import requests
 import json
 from datetime import datetime
+import math
 
 headers = {
     "Host": "cdn.syndication.twimg.com",
@@ -17,7 +18,8 @@ headers = {
 
 
 def get_tweet(id: str):
-    url = f"https://cdn.syndication.twimg.com/tweet-result?id={id}&lang=en"
+    token = calculate_token(id)
+    url = f"https://cdn.syndication.twimg.com/tweet-result?id={id}&lang=en&token={token}"
     data = requests.get(url, headers=headers).content
     if data:
         tweet = json.loads(data)
@@ -39,3 +41,10 @@ def get_tweet(id: str):
             'images': tweet_media if len(tweet_media) > 0 else None
         }
     return None
+
+
+def calculate_token(id_str: str):
+    id = int(id_str)
+    conv = (id / 1e15 * math.pi)
+    token = format(int(conv * (6 ** 2)), 'x')
+    return token.replace('0', '').replace('.', '')
