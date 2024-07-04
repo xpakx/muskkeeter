@@ -2,6 +2,7 @@ import requests
 import json
 from bs4 import BeautifulSoup
 from datetime import datetime
+import brotli
 
 headers = {
     "Host": "syndication.twitter.com",
@@ -9,6 +10,22 @@ headers = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
     "Accept-Language": "en-GB,en;q=0.5",
     "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "TE": "trailers"
+}
+
+gheaders = {
+    "Host": "webcache.googleusercontent.com",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-GB,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Alt-Used": "webcache.googleusercontent.com",
     "Connection": "keep-alive",
     "Upgrade-Insecure-Requests": "1",
     "Sec-Fetch-Dest": "document",
@@ -74,10 +91,10 @@ def extract_tweets(data):
                     quoted_status['id'] = quoted['id_str']
                     quoted_status['text'] = quoted['full_text']
                     quoted_status['author'] = {
-                        'name': quoted['user']['name'],
-                        'username': quoted['user']['screen_name'],
-                        'avatar': quoted['user']['profile_image_url_https'],
-                    }
+                            'name': quoted['user']['name'],
+                            'username': quoted['user']['screen_name'],
+                            'avatar': quoted['user']['profile_image_url_https'],
+                            }
                     quoted_status['date'] = datetime.strptime(quoted['created_at'], '%a %b %d %H:%M:%S %z %Y'),
 
                 result.append({
@@ -93,10 +110,22 @@ def extract_tweets(data):
                         'name': tweet_content['user']['name'],
                         'username': tweet_content['user']['screen_name'],
                         'avatar': tweet_content['user']['profile_image_url_https'],
-                    },
+                        },
                     'images': tweet_media if len(tweet_media) > 0 else None,
                     'link': link if 'url' in link else None,
                     'quoted': quoted_status if 'text' in quoted_status else None,
                     })
         return result
     return None
+
+
+def get_google_cache(name: str):
+    url = f"https://webcache.googleusercontent.com/search?q=cache:https://twitter.com/{name}"
+    # brotli.decompress is automatically applied
+    html = requests.get(url, headers=gheaders).content
+    soup = BeautifulSoup(html, "html.parser")
+    tweets = soup.find_all("article", {"data-testid": "tweet"})
+    for tweet in tweets:
+        user = tweet.find("div", {"data-testid": "User-Name"})
+        link = user.select_one("a[href*=status]")
+        print(link['href'])
